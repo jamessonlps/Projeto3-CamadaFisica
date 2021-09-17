@@ -1,11 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#####################################################
-# Camada Física da Computação
-#Carareto
-#17/02/2018
-#  Camada de Enlace
-####################################################
+from config import FAILURE_COMMUNICATION, SUCCESS_COMMUNICATION
 
 # Importa pacote de tempo
 import time
@@ -73,8 +66,9 @@ class RX(object):
         while(self.getBufferLen() < size):
             time.sleep(0.05)
             now = time.time()
+            # Se o tempo estourar, retorna mensagem de falha na comunicação
             if now - t0 > 5 and self.getBufferLen() < size:
-                return []
+                return FAILURE_COMMUNICATION
         return(self.getBuffer(size))
 
 

@@ -1,10 +1,9 @@
-import asyncio
 import time
 import numpy  as np
 from   enlace import *
 from   random import randint
 from   utils  import build_datagram
-from   config import SUCCESS, FAILURE
+from   config import *
 
 """
 Para verificar as portas no seu dispositivo:
@@ -33,16 +32,16 @@ def main():
 
         # Protocolo de início: verifica se server responderá antes de
         # iniciar a transmissão de dados
-        txBufferBegin = n_datagrams.to_bytes(3, byteorder='little')
-        
         while start_communication:
             print("\nEnviando protocolo de início ao server")
 
-            com1.sendData(txBufferBegin)
+            com1.sendData(SUCCESS_COMMUNICATION)
             print("\nTentativa de comunicação enviada. Aguardando server...")
 
-            rxBeginResponse, nRxBeginResponse = com1.getData(3)
-            if rxBeginResponse == []:
+            rxBeginResponse, nRxBeginResponse = com1.getData(2)
+            time.sleep(0.05)
+
+            if rxBeginResponse == FAILURE_COMMUNICATION:
                 # Se o tempo estourar 5s e o dado não for completamente recebido,
                 # usuário escolhe se começará novamente ou não
                 print("\nTempo esgotado! Deseja tentar novamente? (s/n)")
@@ -61,10 +60,14 @@ def main():
 
             # Se a resposta recebida for igual à enviada, segue para
             # a etapa do envio dos pacotes
-            else:
+            elif rxBeginResponse == SUCCESS_COMMUNICATION:
                 print("\nComunicação com server estabelecida. Preparando envio de pacotes...")
                 start_communication    = False
                 sending_content        = True
+
+            else:
+                print("\nOcorreu algum erro, hein. Vamos tentar novamente")
+                start_communication    = False
 
         last_pack = 0
         while sending_content:
@@ -72,20 +75,21 @@ def main():
                 print(f"\nEnviando pacote {last_pack+1} de {n_datagrams}...")
                 # Faz envio do pacote
                 com1.sendData(data=datagrams[last_pack])
+                time.sleep(0.05)
 
                 # Aguarda resposta do server se envio foi ok ou não
                 response, n_response = com1.getData(2)
+                time.sleep(0.05)
 
                 if response == SUCCESS:
                     print(f"\nPacote {last_pack+1} de {n_datagrams} enviado com sucesso")
-                    last_pack += 1
+                    last_pack += 2
                 
                 elif response == FAILURE:
                     print(f"\nErro ao enviar pacote {last_pack+1}. Preparando reenvio...")
                 
                 else:
-                    print("\nOcorreu um erro inesperado na comunicação. Cancelando envio...")
-                    sending_content = False
+                    print(f"\nOcorreu um erro inesperado na comunicação. Reenviando pacote {last_pack+1}")
 
             else:
                 print("\nTodos os pacotes foram enviados com sucesso!")
@@ -94,6 +98,10 @@ def main():
 
         com1.disable()
         print(f"\nComunicação encerrada")
+
+    except KeyboardInterrupt:
+        print("Fechamento forçado")
+        com1.disable()
         
     except Exception as erro:
         print("Ocorreu um erro na execução:\n")

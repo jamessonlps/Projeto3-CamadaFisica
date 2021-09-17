@@ -5,4 +5,7 @@ SUCCESS = b'\xee\xee'
 FAILURE = b'\xff\xff'
 
 # Fixo e de livre escolha
-EOP = b'\x00\xFF\x0F\xF0'
+EOP = b'\x00\xff\x0f\xf0'
+
+FAILURE_COMMUNICATION = b'\xf0\x0f'
+SUCCESS_COMMUNICATION = b'\x0f\xf0'

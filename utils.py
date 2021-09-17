@@ -1,7 +1,7 @@
 import numpy  as np
 from   config import EOP
 
-def build_head(pack_number:int, len_package:int):
+def build_head(pack_number:int, len_package:int, len_payload:int):
     """
         Constrói o HEAD do pacote, em que os dois primeiros
         bytes correspondem ao número do pacote e os 2 últimos
@@ -9,8 +9,9 @@ def build_head(pack_number:int, len_package:int):
     """
     pack_id     = pack_number.to_bytes(2, byteorder='little')
     package_len = len_package.to_bytes(2, byteorder='little')
+    payload_len = len_payload.to_bytes(2, byteorder='little')
     
-    return b''.join([pack_id, b'\xee'*6, package_len])
+    return b''.join([pack_id, b'\xee'*4, payload_len, package_len])
 
 
 
@@ -48,13 +49,19 @@ def build_datagram(file_name, max_size=114):
     
     # Constrói cada datagrama e preenche a lista de pacotes
     for i in range(0, len_packs):
-        head = build_head(pack_number=i, len_package=len_packs)
         if i == len_packs - 1:
             pack = bytes_content[ i*max_size : -1 ]
         else:
             pack = bytes_content[ i*max_size : (i+1)*max_size ]
-        pack = b''.join([head, pack, EOP])
-        packages.append(pack)
+        # Constrói o head
+        head = build_head(pack_number=i, len_package=len_packs, len_payload=len(pack))
+        
+        if len(pack) < 114:
+            pack = b''.join([pack, b'\x00'*(114 - len(pack))])
+        
+        # Monta o datagrama
+        datagram = b''.join([head, pack, EOP])
+        packages.append(datagram)
 
     return packages, len_packs
 
@@ -66,8 +73,9 @@ def extract_pack_info(package:bytes):
         datagrama recebido pelo server
     """
     pack_id     = package[:2]
+    len_payload = (package[6:8])
     total_packs = package[8:10]
-    payload     = package[10:-4]
+    payload     = package[10:10+int.from_bytes(len_payload, 'little')]
     eop         = package[-4:]
 
-    return pack_id, total_packs, payload, eop
+    return pack_id, total_packs, payload, len_payload, eop
