@@ -1,8 +1,8 @@
 import time
-import numpy  as np
-from   enlace import *
-from   config import *
-from   utils  import extract_pack_info
+import numpy         as np
+from   src.enlace    import *
+from   config.config import *
+from   config.utils  import extract_pack_info
 
 """
 Para verificar as portas no seu dispositivo:

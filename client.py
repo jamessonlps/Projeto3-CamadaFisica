@@ -1,9 +1,9 @@
 import time
-import numpy  as np
-from   enlace import *
-from   random import randint
-from   utils  import build_datagram
-from   config import *
+import numpy         as np
+from   src.enlace    import *
+from   random        import randint
+from   config.utils  import build_datagram
+from   config.config import *
 
 """
 Para verificar as portas no seu dispositivo:
@@ -83,7 +83,7 @@ def main():
 
                 if response == SUCCESS:
                     print(f"\nPacote {last_pack+1} de {n_datagrams} enviado com sucesso")
-                    last_pack += 2
+                    last_pack += 1
                 
                 elif response == FAILURE:
                     print(f"\nErro ao enviar pacote {last_pack+1}. Preparando reenvio...")

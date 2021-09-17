@@ -1,5 +1,5 @@
-import numpy  as np
-from   config import EOP
+import numpy         as np
+from   config.config import EOP
 
 def build_head(pack_number:int, len_package:int, len_payload:int):
     """

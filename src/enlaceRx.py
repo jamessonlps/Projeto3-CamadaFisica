@@ -1,4 +1,4 @@
-from config import FAILURE_COMMUNICATION, SUCCESS_COMMUNICATION
+from config.config import FAILURE_COMMUNICATION, SUCCESS_COMMUNICATION
 
 # Importa pacote de tempo
 import time
