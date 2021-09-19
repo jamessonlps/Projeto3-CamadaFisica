@@ -38,7 +38,7 @@ def main():
             com1.sendData(SUCCESS_COMMUNICATION)
             print("\nTentativa de comunicação enviada. Aguardando server...")
 
-            rxBeginResponse, nRxBeginResponse = com1.getData(2)
+            rxBeginResponse, nRxBeginResponse = com1.getData(size=128)
             time.sleep(0.05)
 
             if rxBeginResponse == FAILURE_COMMUNICATION:
@@ -78,7 +78,7 @@ def main():
                 time.sleep(0.05)
 
                 # Aguarda resposta do server se envio foi ok ou não
-                response, n_response = com1.getData(2)
+                response, n_response = com1.getData(size=128)
                 time.sleep(0.05)
 
                 if response == SUCCESS:

@@ -28,7 +28,7 @@ def main():
         while waiting_contact:
             print("\nAguardando client...")
             # Aguarda contato do client
-            rxBufferBegin, nRxBufferBegin = com2.getData(2)
+            rxBufferBegin, nRxBufferBegin = com2.getData(size=128)
             time.sleep(0.05)
 
             if rxBufferBegin == SUCCESS_COMMUNICATION:
